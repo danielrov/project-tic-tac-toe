@@ -40,7 +40,7 @@ const game = (function() {
         eraseBoard(); 
         currentToken = players[currentPlayer].token;
         currentName = players[currentPlayer].name;
-        turn.textContent = "It's" + currentName + "'s turn."
+        turn.textContent = "It's " + currentName + "'s turn."
     }
 
     const playRound = function (cell) {
@@ -55,7 +55,7 @@ const game = (function() {
                 messages.textContent = "It's a draw"
             } else {
                 console.log(currentName, gameBoard.getBoard());
-                turn.textContent = "It's" + players[1 - currentPlayer].name + "'s turn."
+                turn.textContent = "It's " + players[1 - currentPlayer].name + "'s turn."
                 currentPlayer = 1 - currentPlayer;
                 messages.textContent = ""
             } 
