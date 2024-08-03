@@ -1,12 +1,19 @@
+// Players Constructor (called when button "Start Game" is pressed)
+
 const playersConstructor = function (name, token) {
     return {name, token};
 }
+
+// Sets board as 9 cells with null value.
+// Ability to retrieve and reset the board.
 
 const gameBoard = (function () {
 
     let board = [null,null,null,null,null,null,null,null,null];
 
-    const getBoard = board;
+    const getBoard = function () {
+        return board
+    };
 
     const resetBoard = function() {
         board = [null,null,null,null,null,null,null,null,null];
@@ -17,42 +24,48 @@ const gameBoard = (function () {
     }
 })();
 
+// Game flow
+
 const game = (function() {
-    let players = []
+
+    let players = [];
+    let currentPlayer = 0;
+    let currentToken;
+    let currentName;
 
     const setPlayers = function (name1, name2){
         players[0] = playersConstructor(name1, "X");
         players[1] = playersConstructor(name2, "O");
-        console.log(players);
         gameBoard.resetBoard();
-        cleanBoard();
+        eraseBoard(); 
+        currentToken = players[currentPlayer].token;
+        currentName = players[currentPlayer].name;
+        turn.textContent = "It's" + currentName + "'s turn."
     }
 
-    let currentPlayer = 0;
-
     const playRound = function (cell) {
-        let printCurrentPlayer = players[currentPlayer].name;
-
-        if (gameBoard.getBoard[cell] == null) {
-            gameBoard.getBoard[cell] = players[currentPlayer].token;
-            currentToken = players[currentPlayer].token;
+        currentToken = players[currentPlayer].token;
+        currentName = players[currentPlayer].name;
+        if (gameBoard.getBoard()[cell] == null) {
+            gameBoard.getBoard()[cell] = currentToken;
+            printBoard();
             if(checkWin()){
-                console.log("The winner is " + players[currentPlayer].name);
-                currentPlayer = 1 - currentPlayer;
+                messages.textContent = "The winner is " + players[currentPlayer].name + "! 🥳"
             } else if (checkDraw()){
-                console.log("It's a draw");
-                currentPlayer = 1 - currentPlayer;
+                messages.textContent = "It's a draw"
             } else {
-                console.log(printCurrentPlayer, gameBoard.getBoard);
+                console.log(currentName, gameBoard.getBoard());
+                turn.textContent = "It's" + players[1 - currentPlayer].name + "'s turn."
                 currentPlayer = 1 - currentPlayer;
+                messages.textContent = ""
             } 
         } else {
-            console.log("Choose an empty cell");
+            messages.textContent = "Chose an empty cell"
         }
     }
 
     const checkWin = function() {
-        const board = gameBoard.getBoard;
+        const board = gameBoard.getBoard();
         const token = players[currentPlayer].token;
 
         // Check rows
@@ -83,7 +96,7 @@ const game = (function() {
     }
 
     const checkDraw = function() {
-       const board = gameBoard.getBoard;
+       const board = gameBoard.getBoard();
 
         if(board[0] != null && board[1] != null &&
         board[2] != null && board[3] != null &&
@@ -96,7 +109,17 @@ const game = (function() {
         }
     }
 
+    // DOCUMENT INTERACTIONS
+
     const form = document.querySelector("form");
+
+    const cells = document.querySelectorAll(".cell");
+
+    const resetBtn = document.querySelector(".reset")
+
+    const messages = document.querySelector(".messages")
+
+    const turn = document.querySelector(".turn")
 
     form.addEventListener("submit", function(event){
         event.preventDefault();
@@ -107,21 +130,29 @@ const game = (function() {
         game.setPlayers(player1, player2)
     })
 
-    const cells = document.querySelectorAll(".cell");
-
     cells.forEach(cell => {
         cell.addEventListener("click", function(){
-            selectedCell = cell.id -1;
-            game.playRound(selectedCell);
-            cell.textContent = players[1 -currentPlayer].token
+            game.playRound(cell.id);
         })
     })
 
-    const cleanBoard = function () {
+    const printBoard = function () {
+        cells.forEach(cell => {
+            cell.textContent = gameBoard.getBoard()[cell.id]
+        })
+    }
+
+    const eraseBoard = function () {
         cells.forEach(cell => {
             cell.textContent = "";
         })
     }
+
+    resetBtn.addEventListener("click", function(){
+        eraseBoard();
+        gameBoard.resetBoard();
+        messages.textContent = "";
+    })
 
     return {
         setPlayers , playRound
